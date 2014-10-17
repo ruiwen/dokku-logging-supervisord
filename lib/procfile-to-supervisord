@@ -18,6 +18,11 @@ if [ ! -f "$PROCFILE" ]; then
   exit 1
 fi
 
+if [ ! -f "$SCALEFILE" ]; then
+  echo "Scalefile does not exists or is not readable: $SCALEFILE" 1>&2
+  exit 1
+fi
+
 function gen_supervisor_conf () {
 cat << EOF
 [supervisord]
@@ -30,7 +35,12 @@ EOF
 function gen_supervisor_proc_conf () {
 NAME="$1"
 COMMAND="$2"
-NUM_PROCS="$3"
+if [ "$3" == '' ]; then
+    NUM_PROCS='0'
+else
+    NUM_PROCS="$3"
+fi
+
 PROCESS_NAME='%(program_name)s'
 if [ "$NUM_PROCS" -gt 1 ]; then
   PROCESS_NAME='%(program_name)s.%(process_num)02d'
@@ -62,14 +72,13 @@ cat "$PROCFILE" | while read line; do
 
   if [ -f "$SCALEFILE" ]; then
     SCALE=$(grep "$NAME=" "$SCALEFILE")
-    NUM_PROCS=${SCALE#*=}
-    if [ ! "$NUM_PROCS" -ge 1 ]; then
-      echo "Invalid scale line for process $NAME: $SCALE" 1>&2
-      exit 1
+    if [ "$SCALE" != '' ]; then
+        NUM_PROCS=${SCALE#*=}
     fi
   fi
 
-  # Add a blank line in between processes:
-  echo ""
-  gen_supervisor_proc_conf "$NAME" "$COMMAND" "$NUM_PROCS"
+  if [ "$NUM_PROCS" -ge 1 ]; then
+    echo ""
+    gen_supervisor_proc_conf "$NAME" "$COMMAND" "$NUM_PROCS"
+  fi
 done
