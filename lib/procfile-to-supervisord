@@ -18,11 +18,6 @@ if [ ! -f "$PROCFILE" ]; then
   exit 1
 fi
 
-if [ ! -f "$SCALEFILE" ]; then
-  echo "Scalefile does not exists or is not readable: $SCALEFILE" 1>&2
-  exit 1
-fi
-
 function gen_supervisor_conf () {
 cat << EOF
 [supervisord]
