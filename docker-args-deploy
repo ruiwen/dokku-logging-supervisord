@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
+
+STDIN=$(cat)
+APP="$1"
+
+export PLUGIN_PATH=${PLUGIN_PATH:="/var/lib/dokku/plugins"}
+export DOKKU_ROOT=${DOKKU_ROOT:=~dokku}
+
+PORT=5000
+SCALE="${DOKKU_ROOT}/${APP}/SCALE"
+NUM_PROCS=1
+
+if [ -f ${SCALE} ]; then
+    NUM_PROCS=$( cat ${SCALE} | sed 's/web=//' )
+    NUM_PROCS=$(( NUM_PROCS - 1 ))
+fi
+
+for i in `seq 1 ${NUM_PROCS}`; do 
+    echo "$STDIN -p $((PORT+${i}))"
+done
+
