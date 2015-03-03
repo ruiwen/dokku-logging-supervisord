@@ -41,7 +41,7 @@ case "$1" in
     cat -n "$REPO/SCALE"
     copy_to_container "$SCALEFILE" /SCALE
 
-    dokku release "$APP"
+    dokku release "$APP" "buildstep"
     dokku deploy "$APP"
     ;;
   help)
