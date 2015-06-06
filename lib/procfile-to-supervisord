@@ -43,7 +43,7 @@ fi
 
 cat << EOF
 [program:${NAME}]
-command=/exec sh -c '${COMMAND} --port=50%(process_num)02d'
+command=/exec sh -c '${COMMAND}'
 process_name:${PROCESS_NAME}
 numprocs=${NUM_PROCS}
 autostart=true
