@@ -14,7 +14,7 @@ NUM_PROCS=1
 if [ -f ${SCALE} ]; then
     NUM_PROCS=$( cat ${SCALE} | sed 's/web=//' )
 
-    for i in $(seq 1 ${NUM_PROCS}); do 
+    for i in $(seq 0 ${NUM_PROCS}); do 
         echo "$STDIN -p $((PORT+${i}))"
     done
 else
