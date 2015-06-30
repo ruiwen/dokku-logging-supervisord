@@ -11,14 +11,16 @@ PORT=5000
 SCALE="${DOKKU_ROOT}/${APP}/SCALE"
 NUM_PROCS=1
 
+# We need at least one port, assumed at 5000
+echo "$STDIN -p ${PORT}"
+
 if [ -f ${SCALE} ]; then
     NUM_PROCS=$( cat ${SCALE} | sed 's/web=//' )
+    NUM_PROCS=$(( NUM_PROCS - 1 ))
 
-    for i in $(seq 0 ${NUM_PROCS}); do 
+    for i in $(seq 1 ${NUM_PROCS}); do
         echo "$STDIN -p $((PORT+${i}))"
     done
-else
-    echo "$STDIN -p ${PORT}"
 fi
 
 
